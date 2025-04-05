@@ -54,7 +54,7 @@ def load_to_postgres(**context):
     cur = conn.cursor()
 
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS aqi_data (
+        CREATE TABLE IF NOT EXISTS aqi_data_ver2 (
             id SERIAL PRIMARY KEY,
             timestamp TIMESTAMP,
             aqi INTEGER,
@@ -84,7 +84,7 @@ def summarize_aqi_data():
 
     # 🔁 สร้างหรืออัปเดต summary table
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS aqi_summary (
+        CREATE TABLE IF NOT EXISTS aqi_summary_ver2 (
             day DATE PRIMARY KEY,
             max_aqi INTEGER,
             min_aqi INTEGER,
@@ -124,9 +124,12 @@ def generate_business_insights():
     )
     cur = conn.cursor()
 
-    # สร้าง insights table ถ้ายังไม่มี
+    # ✅ สร้าง schema ถ้ายังไม่มี
+    cur.execute("CREATE SCHEMA IF NOT EXISTS dbt_kantinan;")
+
+    # ✅ ใช้ schema dbt_kantinan สร้างตาราง insights
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS aqi_insights (
+        CREATE TABLE IF NOT EXISTS dbt_kantinan.aqi_insights (
             id SERIAL PRIMARY KEY,
             metric TEXT,
             value TEXT,
@@ -134,9 +137,10 @@ def generate_business_insights():
         );
     """)
 
-    cur.execute("DELETE FROM aqi_insights;")  # รีเซตทุกวัน (หรือจะ append ก็ได้)
+    # ✅ เคลียร์ข้อมูลเดิม (หรือจะใช้ INSERT ON CONFLICT ก็ได้)
+    cur.execute("DELETE FROM dbt_kantinan.aqi_insights;")
 
-    # Insert metric answers
+    # ✅ Insert metric answers
     insights_queries = [
         ("highest_aqi_this_week", """
             SELECT MAX(aqi) FROM aqi_data
@@ -169,7 +173,7 @@ def generate_business_insights():
         result = cur.fetchone()
         value = str(result[0]) if result else 'N/A'
         cur.execute("""
-            INSERT INTO aqi_insights (metric, value)
+            INSERT INTO dbt_kantinan.aqi_insights (metric, value)
             VALUES (%s, %s);
         """, (metric, value))
 
@@ -177,14 +181,13 @@ def generate_business_insights():
     cur.close()
     conn.close()
 
-
 # ---------- DAG ----------
 with DAG(
-    dag_id="capstone_aqi_etl_pipeline",
+    dag_id="capstone_datapipeline_ver2",
     start_date=days_ago(1),
     schedule_interval="0 */12 * * *",
     catchup=False,
-    tags=["dpu", "aqi", "etl"],
+    tags=["dpu"],
 ) as dag:
 
     t1 = PythonOperator(
