@@ -45,10 +45,10 @@ def load_to_postgres(**context):
     transformed = json.loads(context['ti'].xcom_pull(task_ids='transform_aqi_data', key='transformed_data'))
 
     conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "postgres"),
-        dbname=os.getenv("POSTGRES_DB", "airflow"),
-        user=os.getenv("POSTGRES_USER", "airflow"),
-        password=os.getenv("POSTGRES_PASSWORD", "airflow"),
+        host=os.getenv("POSTGRES_HOST", "db"),
+        dbname=os.getenv("POSTGRES_DB", "postgres"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD", "postgres"),
         port=5432
     )
     cur = conn.cursor()
@@ -74,10 +74,10 @@ def load_to_postgres(**context):
 # ---------- TASK 4: Summarize ----------
 def summarize_aqi_data():
     conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "postgres"),
-        dbname=os.getenv("POSTGRES_DB", "airflow"),
-        user=os.getenv("POSTGRES_USER", "airflow"),
-        password=os.getenv("POSTGRES_PASSWORD", "airflow"),
+        host=os.getenv("POSTGRES_HOST", "db"),
+        dbname=os.getenv("POSTGRES_DB", "postgres"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD", "postgres"),
         port=5432
     )
     cur = conn.cursor()
