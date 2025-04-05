@@ -16,7 +16,6 @@ def extract_aqi_data(**context):
     response.raise_for_status()
     data = response.json()
     
-    # Push raw JSON to XCom
     context['ti'].xcom_push(key='raw_data', value=json.dumps(data))
 
 # ---------- TASK 2: Transform ----------
@@ -26,6 +25,12 @@ def transform_aqi_data(**context):
     aqi = raw_data['data']['current']['pollution']['aqius']
     ts = raw_data['data']['current']['pollution']['ts']
     fetched_at = datetime.utcnow().isoformat()
+
+    # 🔍 เพิ่ม data quality checks
+    if not isinstance(aqi, int) or not (0 <= aqi <= 500):
+        raise ValueError(f"Invalid AQI value: {aqi}")
+    if ts is None:
+        raise ValueError("Missing timestamp in data")
 
     transformed = {
         "timestamp": ts,
@@ -66,11 +71,53 @@ def load_to_postgres(**context):
     cur.close()
     conn.close()
 
-# ---------- DAG Definition ----------
+# ---------- TASK 4: Summarize ----------
+def summarize_aqi_data():
+    conn = psycopg2.connect(
+        host=os.getenv("POSTGRES_HOST", "postgres"),
+        dbname=os.getenv("POSTGRES_DB", "airflow"),
+        user=os.getenv("POSTGRES_USER", "airflow"),
+        password=os.getenv("POSTGRES_PASSWORD", "airflow"),
+        port=5432
+    )
+    cur = conn.cursor()
+
+    # 🔁 สร้างหรืออัปเดต summary table
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS aqi_summary (
+            day DATE PRIMARY KEY,
+            max_aqi INTEGER,
+            min_aqi INTEGER,
+            avg_aqi FLOAT,
+            readings INTEGER
+        );
+    """)
+
+    # 🔁 ลบแล้วสร้างใหม่จากข้อมูลล่าสุด
+    cur.execute("DELETE FROM aqi_summary;")
+
+    cur.execute("""
+        INSERT INTO aqi_summary (day, max_aqi, min_aqi, avg_aqi, readings)
+        SELECT 
+            DATE(timestamp) AS day,
+            MAX(aqi),
+            MIN(aqi),
+            AVG(aqi),
+            COUNT(*)
+        FROM aqi_data
+        GROUP BY day
+        ORDER BY day;
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+# ---------- DAG ----------
 with DAG(
     dag_id="capstone_aqi_etl_pipeline",
     start_date=days_ago(1),
-    schedule_interval="@daily",
+    schedule_interval="0 */12 * * *",
     catchup=False,
     tags=["dpu", "aqi", "etl"],
 ) as dag:
@@ -93,5 +140,10 @@ with DAG(
         provide_context=True,
     )
 
-    # Dependency: Extract >> Transform >> Load
-    t1 >> t2 >> t3
+    t4 = PythonOperator(
+        task_id="summarize_aqi_data",
+        python_callable=summarize_aqi_data,
+    )
+
+    # Workflow: Extract → Transform → Load → Summarize
+    t1 >> t2 >> t3 >> t4
