@@ -1,0 +1,7 @@
+version: 2
+source:
+  - name: dpu
+    database: postgres  # ใช้ฐานข้อมูล 'postgres'
+    schema: public  # ใช้ schema 'public'
+    tables:
+      - name: aqi_data  # ใช้ตาราง 'aqi_data' จาก schema 'public'

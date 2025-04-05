@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: avg_week_AQI
+    columns:
+      - name: avg_AQI
