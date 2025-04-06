@@ -146,7 +146,7 @@ def generate_business_insights():
 with DAG(
     dag_id="capstone_datapipeline_ver2",
     start_date=days_ago(1),
-    schedule_interval="0 */12 * * *",
+    schedule_interval="0 */6 * * *",
     catchup=False,
     tags=["dpu","CapstoneProject"],
 ) as dag:
