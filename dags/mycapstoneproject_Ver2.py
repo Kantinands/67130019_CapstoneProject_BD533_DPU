@@ -158,4 +158,4 @@ with DAG(
     t5 = PythonOperator(task_id="summarize_aqi_data", python_callable=summarize_aqi_data)
     t6 = PythonOperator(task_id="generate_business_insights", python_callable=generate_business_insights)
 
-    t1 >> t2 >> t3 >> [t4 >> t5 >> t6]
+    t1 >> t2 >> t3 >> t4 >> t5 >> t6
