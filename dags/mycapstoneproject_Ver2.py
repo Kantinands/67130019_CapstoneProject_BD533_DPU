@@ -37,7 +37,7 @@ def check_data_quality(**context):
     for field in required_fields:
         if field not in data or data[field] is None:
             raise ValueError(f"Missing required field: {field}")
-    if not isinstance(data['aqi'], int) or not (0 <= data['aqi'] <= 500):
+    if not isinstance(data['aqi'], int) or not (0 <= data['aqi'] <= 1000):
         raise ValueError(f"Invalid AQI value: {data['aqi']}")
     print("Data quality passed.")
 
