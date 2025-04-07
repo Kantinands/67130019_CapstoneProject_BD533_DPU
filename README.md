@@ -10,7 +10,8 @@ To automate the process of:
 - Summarizing and generating **business insights** for decision-making
 
 ## 📅 Final DAG Name
-**`capstone_datapipeline_ver2`**
+**`mycapstoneproject_ver2`**  
+(for **`mycapstoneproject_dbt`** is a not complete and not success in dbt method)
 
 ### ⏰ Schedule
 Runs every 6 hours: `0 */6 * * *`
@@ -54,3 +55,4 @@ Runs every 6 hours: `0 */6 * * *`
 ## 🎥 Youtube Explanation 
 https://www.youtube.com/watch?v=WCs6AyghLs8
 
+## Kantinan Rodphaibool 67130019
