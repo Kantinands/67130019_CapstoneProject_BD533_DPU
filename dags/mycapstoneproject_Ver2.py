@@ -8,6 +8,23 @@ import os
 from datetime import datetime
 
 # Extract Data
+    ## วิธีที่ 1 : ดึงไปตรงๆเลยแล้วค่อยมาเลือก bangkok 
+
+# def extract_aqi_data():
+#    url = "https://api.airvisual.com/v2/city"
+#    api_key = os.getenv("AIRVISUAL_API_KEY")
+#    params = {
+#        "city": "Bangkok",
+#        "state": "Bangkok",
+#        "country": "Thailand",
+#        "key": "AIRVISUAL_API_KEY"  # ใส่ API key จริงของคุณตรงนี้
+#    }
+
+#    response = requests.get(url, params=params)
+#    data = response.json()
+    
+
+    ## วิธีที่ 2 : specifix ไปตั้งแต่ URL เลย 
 def extract_aqi_data(**context):
     api_key = os.getenv("AIRVISUAL_API_KEY")
     url = f"https://api.airvisual.com/v2/city?city=Bangkok&state=Bangkok&country=Thailand&key={api_key}"
