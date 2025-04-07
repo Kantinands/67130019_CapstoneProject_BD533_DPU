@@ -43,14 +43,6 @@ Runs every 6 hours: `0 */6 * * *`
   - Count of unhealthy AQI days in the last 30 days
 
 
-## 🔐 Environment Variables
-
-Make sure to set the **AirVisual API key** as an environment variable:
-```bash
-export AIRVISUAL_API_KEY="api_key_here"
-```
----
-
 ## 🚀 How to Use
 
 1. Add this DAG script to your Airflow DAGs folder
@@ -58,3 +50,7 @@ export AIRVISUAL_API_KEY="api_key_here"
 3. Start your Airflow scheduler and webserver
 4. Trigger the DAG manually or let it run on schedule
 ---
+
+## 🎥 Youtube Explanation 
+https://www.youtube.com/watch?v=WCs6AyghLs8
+
