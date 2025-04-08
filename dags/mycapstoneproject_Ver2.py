@@ -59,6 +59,7 @@ def check_data_quality(**context):
     print("Data quality passed.")
 
 # Load using PostgresHook
+    # *** Set up connector in Airflow , in this case name = 'postgres_default' ***
 def load_to_postgres(**context):
     transformed = json.loads(context['ti'].xcom_pull(task_ids='transform_aqi_data', key='transformed_data'))
     hook = PostgresHook(postgres_conn_id='postgres_default')
@@ -103,7 +104,7 @@ def summarize_aqi_data():
         ORDER BY day;
     """)
 
-# Business Insight using PostgresHook
+# Business Insight using PostgresHook -> new schema (not the same as previous table)
 def generate_business_insights():
     hook = PostgresHook(postgres_conn_id='postgres_default')
     conn = hook.get_conn()
@@ -159,7 +160,7 @@ def generate_business_insights():
     conn.commit()
     cur.close()
 
-# ---------- DAG ----------
+# ---------- DAG ; link task together  ----------
 with DAG(
     dag_id="capstone_datapipeline_ver2",
     start_date=days_ago(1),
