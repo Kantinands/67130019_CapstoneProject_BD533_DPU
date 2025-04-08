@@ -55,4 +55,5 @@ Runs every 6 hours: `0 */6 * * *`
 ## 🎥 Youtube Explanation 
 https://www.youtube.com/watch?v=WCs6AyghLs8
 
-## Kantinan Rodphaibool 67130019
+## BD533 Data pipeline Project
+Kantinan Rodphaibool 67130019
