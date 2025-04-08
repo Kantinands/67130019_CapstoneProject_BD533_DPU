@@ -46,10 +46,10 @@ Runs every 6 hours: `0 */6 * * *`
 
 ## 🚀 How to Use
 
-1. Add this DAG script to your Airflow DAGs folder
-2. Set your API key as an environment variable
-3. Start your Airflow scheduler and webserver
-4. Trigger the DAG manually or let it run on schedule
+1. Add this DAG script to Airflow DAGs folder
+2. Set API key as an environment variable (.env)
+3. Start Airflow scheduler and webserver(postgres)
+4. Trigger the DAG run on schedule 
 ---
 
 ## 🎥 Youtube Explanation 
